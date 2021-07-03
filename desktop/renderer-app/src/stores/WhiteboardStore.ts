@@ -79,6 +79,16 @@ export class WhiteboardStore {
         this.isShowPreviewPanel = show;
     };
 
+    public getTimestamp(): number | undefined {
+        return this.room?.calibrationTimestamp;
+    }
+
+    public syncTimestamp(timestamp: number): void {
+        if (Number.isFinite(timestamp)) {
+            this.room?.syncBlockTimestamp(timestamp);
+        }
+    }
+
     public async joinWhiteboardRoom(): Promise<void> {
         if (!globalStore.userUUID) {
             throw new Error("Missing userUUID");

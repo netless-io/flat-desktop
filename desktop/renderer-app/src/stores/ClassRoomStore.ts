@@ -122,7 +122,14 @@ export class ClassRoomStore {
         this.classMode = config.classMode ?? ClassModeType.Lecture;
         this.rtcChannelType = config.recordingConfig.channelType ?? RtcChannelType.Communication;
 
-        this.rtc = new RTCAPI();
+        this.whiteboardStore = new WhiteboardStore({
+            isCreator: this.isCreator,
+        });
+
+        this.rtc = new RTCAPI({
+            getTimestamp: () => this.whiteboardStore.getTimestamp(),
+            syncTimestamp: (timestamp: number) => this.whiteboardStore.syncTimestamp(timestamp),
+        });
         this.rtm = new RTMAPI();
         this.cloudRecording = new CloudRecording({ roomUUID: config.roomUUID });
 
@@ -142,10 +149,6 @@ export class ClassRoomStore {
             roomUUID: this.roomUUID,
             ownerUUID: this.ownerUUID,
             userUUID: this.userUUID,
-        });
-
-        this.whiteboardStore = new WhiteboardStore({
-            isCreator: this.isCreator,
         });
 
         autorun(reaction => {

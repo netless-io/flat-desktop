@@ -20,15 +20,33 @@ export class Rtc {
     private appID: string = AGORA.APP_ID || "";
     // User can only join one RTC channel at a time.
     private roomUUID: string | null = null;
+    private streamId?: number;
+    private streamMessageTimer = NaN;
 
-    public constructor() {
+    private readonly getTimestamp: () => void;
+
+    public constructor({
+        getTimestamp,
+        syncTimestamp,
+    }: {
+        getTimestamp: () => void;
+        syncTimestamp: (timestamp: number) => void;
+    }) {
         if (!this.appID) {
             throw new Error("Agora App Id not set.");
         }
 
         this.rtcEngine = window.rtcEngine;
 
+        this.getTimestamp = getTimestamp;
+
         this.rtcEngine.on("tokenPrivilegeWillExpire", this.renewToken);
+
+        function onStreamMessage(_uid: number, _streamId: number, msg: string, _len: number): void {
+            syncTimestamp(Number(msg));
+        }
+
+        this.rtcEngine.on("streamMessage", onStreamMessage);
     }
 
     public async join({
@@ -65,8 +83,14 @@ export class Rtc {
         if (channelType === RtcChannelType.Broadcast) {
             if (isCreator) {
                 this.rtcEngine.setClientRole(1);
+                this.streamId = this.rtcEngine.createDataStreamWithConfig({
+                    ordered: true,
+                    syncWithAudio: true,
+                });
+                this.startStreamMessage(1000);
             } else {
                 this.rtcEngine.setClientRole(2);
+                // this.rtcEngine.setClientRoleWithOptions(2, { audienceLatencyLevel: 1 });
             }
         }
 
@@ -83,6 +107,7 @@ export class Rtc {
 
     public leave(): void {
         if (this.roomUUID !== null) {
+            this.stopStreamMessage();
             this.rtcEngine.leaveChannel();
             this.rtcEngine.videoSourceLeave();
             this.roomUUID = null;
@@ -101,4 +126,23 @@ export class Rtc {
             this.rtcEngine.renewToken(token);
         }
     };
+
+    private startStreamMessage(intervalMS: number): void {
+        const sendOnce = (): void => {
+            this.streamMessageTimer = window.setTimeout(() => {
+                if (this.streamId) {
+                    const timestamp = this.getTimestamp();
+                    this.rtcEngine.sendStreamMessage(this.streamId, String(timestamp));
+                }
+                sendOnce();
+            }, intervalMS);
+        };
+
+        sendOnce();
+    }
+
+    private stopStreamMessage(): void {
+        window.clearTimeout(this.streamMessageTimer);
+        this.streamMessageTimer = NaN;
+    }
 }

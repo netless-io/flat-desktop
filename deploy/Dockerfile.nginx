@@ -1,0 +1,12 @@
+FROM nginx
+
+WORKDIR /app
+
+COPY --from=agoraflat/flat-web:latest /app/assets /app/assets
+
+COPY deploy/nginx.conf /etc/nginx/nginx.conf
+COPY deploy/nginx-mime.types /etc/nginx/nginx-mime.types
+
+COPY web/flat-web/dist /app
+
+CMD ["nginx"]

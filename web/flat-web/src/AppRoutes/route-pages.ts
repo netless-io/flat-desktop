@@ -95,4 +95,8 @@ export const routePages: RoutePages = {
         title: "JoinPage",
         component: () => import("../pages/JoinPage"),
     },
+    [RouteNameType.ResourcePreviewPage]: {
+        title: "ResourcePreviewPage",
+        component: () => import("../pages/ResourcePreviewPage"),
+    },
 };

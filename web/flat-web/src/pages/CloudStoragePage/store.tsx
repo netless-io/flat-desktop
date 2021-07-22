@@ -26,6 +26,7 @@ import {
     renameFile,
 } from "../../apiMiddleware/flatServer/storage";
 import { errorTips } from "../../components/Tips/ErrorTips";
+import { INVITE_BASEURL } from "../../constants/Process";
 import { getUploadTaskManager } from "../../utils/UploadTaskManager";
 import { UploadStatusType, UploadTask } from "../../utils/UploadTaskManager/UploadTask";
 
@@ -357,6 +358,18 @@ export class CloudStorageStore extends CloudStorageStoreBase {
     }
 
     private previewCourseware(file: CloudStorageFile): void {
+        const { fileURL, taskToken, taskUUID } = file;
+
+        const convertFileTypeList = [".pptx", ".ppt", ".pdf", ".doc", ".docx"];
+
+        const isConvertFileType = convertFileTypeList.some(type => fileURL.includes(type));
+
+        const encodeFileURL = encodeURIComponent(fileURL);
+
+        const resourcePreviewURL = isConvertFileType
+            ? `${INVITE_BASEURL}/preview/${encodeFileURL}/${taskToken}/${taskUUID}/`
+            : `${INVITE_BASEURL}/preview/${encodeFileURL}/`;
+
         switch (file.convert) {
             case "converting": {
                 Modal.info({ content: this.i18n.t("please-wait-while-the-lesson-is-transcoded") });
@@ -367,10 +380,7 @@ export class CloudStorageStore extends CloudStorageStoreBase {
                 return;
             }
             default: {
-                // @TODO preview courseware
-                Modal.info({
-                    content: this.i18n.t("please-go-to-the-room-to-view-the-courseware"),
-                });
+                window.open(resourcePreviewURL, "_blank");
             }
         }
     }

@@ -64,7 +64,7 @@ export const CreateRoomBox = observer<CreateRoomBoxProps>(function CreateRoomBox
             style={{ width: "auto" }}
             onClick={e => setRoomRegion(e.key as Region)}
         >
-            <div style={{ padding: "4px 12px 0 14px", color: "gray" }}>服务器</div>
+            <div style={{ padding: "4px 12px 0 14px", color: "gray" }}>{t("servers")}</div>
             {regions.map(region => (
                 <Menu.Item key={region}>
                     <img src={RegionSVG[region]} alt={region} style={{ width: 22 }} />

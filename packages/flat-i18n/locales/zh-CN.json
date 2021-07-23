@@ -347,6 +347,7 @@
   "nav-download": "下载",
   "nav-source-code": "源码",
   "nav-settings": "设置",
-  "set-camera-error": "无法检测到摄像头，请检查您的设备后重试。",
-  "set-mic-error": "无法检测到麦克风，请检查您的设备后重试。"
+  "servers": "服务器",
+  "set-camera-error": "无法检测到摄像头，请检查您的设备后重试",
+  "set-mic-error": "无法检测到麦克风，请检查您的设备后重试"
 }

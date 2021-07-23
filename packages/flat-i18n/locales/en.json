@@ -347,6 +347,7 @@
   "nav-download": "Download",
   "nav-source-code": "Source Code",
   "nav-settings": "Settings",
-  "set-camera-error": "Failed to turn on camera.",
-  "set-mic-error": "Failed to turn on microphone."
+  "servers": "Server",
+  "set-camera-error": "Failed to turn on camera",
+  "set-mic-error": "Failed to turn on microphone"
 }
